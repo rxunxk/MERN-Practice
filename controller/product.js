@@ -1,41 +1,75 @@
-const fs = require("fs");
-const data = JSON.parse(fs.readFileSync("data.json"));
-const products = data.products;
+const model = require("../model/product");
+const Product = model.Product;
 
-const createProduct = (req, res) => {
-  products.push(req.body);
-  res.send(req.body);
+//CREATE - POST
+const createProduct = async (req, res) => {
+  const product = new Product(req.body);
+  try {
+    await product.save().then((response) => {
+      res.status(201).json(response);
+    });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
-const getAllProducts = (req, res) => {
-  res.json(products);
+//READ - GET
+const getAllProducts = async (req, res) => {
+  try {
+    await Product.find().then((response) => {
+      res.status(200).json(response);
+    });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
-const getProduct = (req, res) => {
-  const id = +req.params.id;
-  const product = products.find((p) => p.id === id);
-  res.json(product);
+//READ - specific id - GET
+const getProduct = async (req, res) => {
+  const id = req.params.id;
+  try {
+    await Product.findById(id).then((response) =>
+      res.status(200).json(response)
+    );
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
-const replaceProduct = (req, res) => {
-  const id = +req.params.id;
-  const productIndex = products.findIndex((p) => p.id === id);
-  products.splice(productIndex, 1, { ...req.body, id: id });
-  res.status(201).json();
+//UPDATE - Replace older object - PUT
+const replaceProduct = async (req, res) => {
+  const id = req.params.id;
+  try {
+    await Product.findOneAndReplace({ _id: id }, req.body, { new: true }).then(
+      (response) => res.status(200).json(response)
+    );
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
-const updateProduct = (req, res) => {
-  const id = +req.params.id;
-  const productIndex = products.findIndex((p) => p.id === id);
-  products.splice(productIndex, 1, { ...products[productIndex], ...req.body });
-  res.status(201).json({ status: "updated successfully" });
+//UPDATE - PATCH
+const updateProduct = async (req, res) => {
+  const id = req.params.id;
+  try {
+    await Product.findOneAndUpdate({ _id: id }, req.body, { new: true }).then(
+      (response) => res.status(200).json(response)
+    );
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
-const deleteProduct = (req, res) => {
-  const id = +req.params.id;
-  const productIndex = products.findIndex((p) => p.id === id);
-  products.splice(productIndex, 1);
-  res.status(200).json({ status: "product deleted successfully" });
+//DELETE - delete
+const deleteProduct = async (req, res) => {
+  const id = req.params.id;
+  try {
+    await Product.findOneAndDelete({ _id: id }, { new: true }).then(
+      (response) => res.status(200).json(response)
+    );
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
 exports.createProduct = createProduct;

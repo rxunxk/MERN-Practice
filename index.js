@@ -2,10 +2,18 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const server = express();
-const productRouter = require("./routes/productRouter");
+const productRouter = require("./routes/product");
 const userRouter = require("./routes/userRouter");
+const mongoose = require("mongoose");
 
-console.log("env: ", process.env.DB_PASSWORD);
+//db connection
+main().catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
+  console.log("database connected");
+  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
+}
 
 server.use(express.json()); //bodyParser
 server.use(morgan("default"));
