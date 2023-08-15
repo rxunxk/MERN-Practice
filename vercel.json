@@ -23,6 +23,10 @@
       "dest": "dist/index.html"
     },
     {
+      "src": "/Add",
+      "dest": "dist/index.html"
+    },
+    {
       "src": "/(.+)",
       "dest": "dist/$1"
     }
