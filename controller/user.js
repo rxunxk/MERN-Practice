@@ -1,13 +1,25 @@
 const fs = require("fs");
 const path = require("path");
+const model = require("../model/user");
+const User = model.User;
+const jwt = require("jsonwebtoken");
+
 const data = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, "../data.json"))
 );
 const users = data.users;
 
-const createUser = (req, res) => {
-  users.push(req.body);
-  res.send(req.body);
+//POST - Create a new user
+const createUser = async (req, res) => {
+  const user = new User(req.body);
+  user.token = jwt.sign({ password: req.body.password }, process.env.SECRET);
+  try {
+    await user.save().then((response) => {
+      res.status(201).json(response);
+    });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
 const getAllUsers = (req, res) => {

@@ -7,6 +7,7 @@ const userRouter = require("./routes/userRouter");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 //db connection
 main().catch((err) => console.log(err));
@@ -18,6 +19,10 @@ async function main() {
 }
 
 //middlewares
+server.use((req, res) => {
+  const decoded = jwt.verify(token, process.env.SECRET);
+  console.log(decoded);
+});
 server.use(cors()); //to allow cross-orgin requests
 server.use(express.json()); //bodyParser
 server.use(morgan("default"));
