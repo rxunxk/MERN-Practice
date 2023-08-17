@@ -1,6 +1,26 @@
 const model = require("../model/product");
 const Product = model.Product;
+const ejs = require("ejs");
+const path = require("path");
 
+//view SSR -> Server side rendered
+const getAllProductsSSR = async (req, res) => {
+  try {
+    await Product.find().then((response) => {
+      ejs.renderFile(
+        path.resolve(__dirname, "../pages/index.ejs"),
+        {
+          products: response,
+        },
+        function (err, str) {
+          res.status(200).send(str);
+        }
+      );
+    });
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
 //CREATE - POST
 const createProduct = async (req, res) => {
   const product = new Product(req.body);
@@ -78,3 +98,4 @@ exports.getProduct = getProduct;
 exports.replaceProduct = replaceProduct;
 exports.updateProduct = updateProduct;
 exports.deleteProduct = deleteProduct;
+exports.getAllProductsSSR = getAllProductsSSR;
